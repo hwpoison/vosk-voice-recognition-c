@@ -20,7 +20,7 @@ int main(){
     while(true){
         struct audio_block *block = dequeue_audio_block();
         if(block != NULL){
-            analyzeFromBuffer(recognizer, block->data, block->size);
+            recognizeAudioBlock(recognizer, block->data, block->size);
         }
     }
 	printf("Final result %s\n", vosk_recognizer_final_result(recognizer));

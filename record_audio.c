@@ -12,7 +12,7 @@
 
 
 //Length is typically 44100*time...
-int StartRecord(char * data, int length)
+int startRecord(char * data, int length)
 {
     HWAVEIN hWaveIn;
     WAVEHDR WaveInHdr;
@@ -44,7 +44,7 @@ int StartRecord(char * data, int length)
     return 0;
 }
  
-int StartPlayback(char *data, int length)
+int startPlayback(char *data, int length)
 {
     HWAVEOUT hWaveOut;
     WAVEHDR WaveOutHdr;

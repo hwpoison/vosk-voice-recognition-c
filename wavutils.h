@@ -9,15 +9,15 @@
 uint32_t *to_little_endian(uint32_t x);
 
 // Play a wav file
-void PlayWavFile(char *filename);
+void playWavFile(char *filename);
  
 // Play wavform raw audio data
-void PlayBuffer(char *rawdata, int nlen);
+void playAudioBuffer(char *rawdata, int nlen);
 
 // Record audio from mic and saves in a .wav file
-void RecordAndSaveWav(char *filename, int secs);
+void recordAndSaveWav(char *filename, int secs);
 
 // Generate a playable .wav file from a raw wavform
-void GenerateWav(char *filename, char *rawdata, int size);
+void generateWav(char *filename, char *rawdata, int size);
 
 #endif

@@ -30,7 +30,7 @@ void *getBlockFromMic(){
         struct audio_block *block = malloc(sizeof(struct audio_block));
         block->size = BLOCK_SIZE;
         block->data = malloc(sizeof(char) * block->size);
-        StartRecord(block->data, block->size);
+        startRecord(block->data, block->size);
         enqueue_audio_block(block);
        // Sleep(1);
     }
@@ -58,7 +58,7 @@ void *getBlockFromFile(void *filename){
     }
 }
 
-void analyzeFromBuffer(VoskRecognizer *recognizer, char *data, int nlen){
+void recognizeAudioBlock(VoskRecognizer *recognizer, char *data, int nlen){
     int final = vosk_recognizer_accept_waveform(recognizer, data, nlen);
     if (final) {
      printf("%s\n", vosk_recognizer_result(recognizer));
@@ -67,7 +67,7 @@ void analyzeFromBuffer(VoskRecognizer *recognizer, char *data, int nlen){
     }
 }
 
-void wavToText(VoskRecognizer *recognizer, char *filename){
+void recognizeWavFile(VoskRecognizer *recognizer, char *filename){
     FILE *wavin;
     char buffer[BLOCK_SIZE];
     int nread;
@@ -76,7 +76,7 @@ void wavToText(VoskRecognizer *recognizer, char *filename){
     while(!feof(wavin)){
         nread = fread(buffer, 1, sizeof(buffer), wavin);
         dequeue_audio_block();
-        analyzeFromBuffer(recognizer, buffer, sizeof(buffer));
+        recognizeAudioBlock(recognizer, buffer, sizeof(buffer));
     } 
     fclose(wavin);
 }

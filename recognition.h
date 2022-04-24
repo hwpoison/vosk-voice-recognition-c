@@ -7,8 +7,6 @@
 #include "vosk_api.h"
 #include "wavutils.h"
 
-#define BLOCK_SIZE 6000
-
 struct audio_block {
     char *data;
     int size;
@@ -33,9 +31,9 @@ void *getBlockFromMic();
 void *getBlockFromFile(void *filename);
 
 // Analyze audio from a buffer
-void analyzeFromBuffer(VoskRecognizer *recognizer, char *data, int nlen);
+void recognizeAudioBlock(VoskRecognizer *recognizer, char *data, int nlen);
 
 // Voice to text from a .wav file
-void wavToText(VoskRecognizer *recognizer, char *filename);
+void recognizeWavFile(VoskRecognizer *recognizer, char *filename);
 
 #endif

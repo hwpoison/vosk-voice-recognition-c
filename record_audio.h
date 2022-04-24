@@ -9,8 +9,9 @@
 #define NCHANNELS           1 // 1 - Mono or 2 - Stereo
 #define BLOCK_ALIGN         NCHANNELS * (BITSPERSAMPLE / 8)
 #define AVG_BYTE_PER_SECOND BLOCK_ALIGN * SAMPLERATE
+#define BLOCK_SIZE 6000
 
-int StartRecord(char * data, int length);
-int StartPlayback(char *data, int length);
+int startRecord(char *data, int length);
+int startPlayback(char *data, int length);
 
 #endif

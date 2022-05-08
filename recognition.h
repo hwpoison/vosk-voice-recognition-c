@@ -7,7 +7,8 @@
 #include "vosk_api.h"
 #include "wavutils.h"
 
-struct audio_block {
+struct audio_block
+{
     char *data;
     int size;
     struct audio_block *next;
@@ -36,4 +37,9 @@ void recognizeAudioBlock(VoskRecognizer *recognizer, char *data, int nlen);
 // Voice to text from a .wav file
 void recognizeWavFile(VoskRecognizer *recognizer, char *filename);
 
+unsigned char *getFinalResult(VoskRecognizer *recognizer);
+
+int checkFileExists(char *filename);
+
+void writeToFile(char *filename, char *data, int nlen);
 #endif

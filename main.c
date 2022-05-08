@@ -16,9 +16,9 @@ int main(int argc, char **argv)
     }
 
     char filename[100];
-    int rc = 0;
     queue_size = 0;
     pthread_t thread_pool[NUM_THREADS];
+
     printf("[+] Initializing model...\n");
     VoskModel *model = vosk_model_new("model");
     VoskRecognizer *recognizer = vosk_recognizer_new(model, SAMPLERATE);

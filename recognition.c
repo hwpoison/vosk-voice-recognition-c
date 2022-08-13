@@ -1,5 +1,5 @@
 #include "recognition.h"
-#include "record_audio.c"
+#include "record_audio.h"
 
 #define true 1
 
@@ -38,9 +38,8 @@ void *getBlockFromMic()
         struct audio_block *block = malloc(sizeof(struct audio_block));
         block->size = BLOCK_SIZE;
         block->data = malloc(sizeof(char) * block->size);
-        startRecord(block->data, block->size);
+        record(block->data, block->size);
         enqueue_audio_block(block);
-        // Sleep(1);
     }
 }
 
@@ -94,7 +93,6 @@ void recognizeWavFile(VoskRecognizer *recognizer, char *filename)
     while (!feof(wavin))
     {
         nread = fread(buffer, 1, sizeof(buffer), wavin);
-        dequeue_audio_block();
         recognizeAudioBlock(recognizer, buffer, sizeof(buffer));
     }
     fclose(wavin);

@@ -42,4 +42,5 @@ unsigned char *getFinalResult(VoskRecognizer *recognizer);
 int checkFileExists(char *filename);
 
 void writeToFile(char *filename, char *data, int nlen);
+
 #endif

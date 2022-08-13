@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <pthread.h>
 #include "recognition.h"
+#include "record_audio.h"
 
 #define true 1
 #define NUM_THREADS 2
@@ -9,7 +11,7 @@
 int main(int argc, char **argv)
 {
     // get first argument
-    if (argc < 3)
+    if (argc < 2)
     {
         printf("Usage: %s.exe --file <filename>\n\t\t\t  --mic", argv[0]);
         return 1;
@@ -26,6 +28,7 @@ int main(int argc, char **argv)
     char *option = argv[1];
     if (!strcmp(option, "--mic"))
     {
+        printf("[+] Initializing microphone...\n");
         int rc = pthread_create(&thread_pool[1], NULL, getBlockFromMic, NULL);
         while (true)
         {
@@ -38,7 +41,7 @@ int main(int argc, char **argv)
         printf("[+] Final result %s\n", getFinalResult(recognizer));
         pthread_exit(NULL);
     }
-    else if (!strcmp(option, "--file"))
+    else if (!strcmp(option, "--file") && argc == 3)
     {
         strcpy(filename, argv[2]);
         if (checkFileExists(filename))

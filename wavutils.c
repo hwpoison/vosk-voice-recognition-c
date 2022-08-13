@@ -1,5 +1,4 @@
 #include "wavutils.h"
-#include "record_audio.h"
 
 void playBuffer(char *rawdata, int nlen){
     play(rawdata, nlen);
@@ -18,20 +17,20 @@ void recordAndSaveWav(char *filename, int secs) {
 void generateWav(char *filename, char *rawdata, int size) { 
     FILE *fp;
     fp = fopen(filename, "wb");
-    fwrite("RIFF", 4, 1, fp);                               // 0-3 RIFF
-    fwrite(&size, 4, 1, fp);                                // 4-8 size
-    fwrite("WAVE", 4, 1, fp);                               // 9-11 WAVE
-    fwrite("fmt ", 4, 1, fp);                               // 12-14 fmt
-    fwrite(to_little_endian(16), 4, 1, fp);                 // 15-18 Length of format data as listed above
-    fwrite(to_little_endian(wav.formatTag), 2, 1, fp);         // 19-20 pFormat.wformatTag
+    fwrite("RIFF", 4, 1, fp);                                   // 0-3 RIFF
+    fwrite(&size, 4, 1, fp);                                    // 4-8 size
+    fwrite("WAVE", 4, 1, fp);                                   // 9-11 WAVE
+    fwrite("fmt ", 4, 1, fp);                                   // 12-14 fmt
+    fwrite(to_little_endian(16), 4, 1, fp);                     // 15-18 Length of format data as listed above
+    fwrite(to_little_endian(wav.formatTag), 2, 1, fp);          // 19-20 pFormat.wformatTag
     fwrite(to_little_endian(wav.nChannels), 2, 1, fp);          // 21-22 pFormat.nChannels
     fwrite(to_little_endian(wav.sampleRate), 4, 1, fp);         // 23-26 pFormat.nSamplesPerSec
-    fwrite(to_little_endian(wav.avgBytesPerSecond), 4, 1, fp);// 27-30 pFormat.nAvgBytesPerSec
-    fwrite(to_little_endian(wav.blockAlign), 2, 1, fp);        // 31-32 pFormat.nBlockAlign
+    fwrite(to_little_endian(wav.avgBytesPerSecond), 4, 1, fp);  // 27-30 pFormat.nAvgBytesPerSec
+    fwrite(to_little_endian(wav.blockAlign), 2, 1, fp);         // 31-32 pFormat.nBlockAlign
     fwrite(to_little_endian(wav.bitsPerSample), 2, 1, fp);      // 33-35 pFormat.wBitsPerSample
-    fwrite("data", 4, 1, fp);                               // 36-39 data indicator
-    fwrite(&size, 4, 1, fp);                                // 40-44 size of data
-    fwrite(rawdata, size, 1, fp);                              // 45-size
+    fwrite("data", 4, 1, fp);                                   // 36-39 data indicator
+    fwrite(&size, 4, 1, fp);                                    // 40-44 size of data
+    fwrite(rawdata, size, 1, fp);                               // 45- until EOF
     fclose(fp);
 }
 

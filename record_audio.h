@@ -3,13 +3,13 @@
 #include <windows.h>
 #include <mmsystem.h>
 
-#define FORMAT_TAG              1
-#define SAMPLERATE              44100
-#define BITSPERSAMPLE           16
-#define NCHANNELS               1
-#define BLOCK_ALIGN             NCHANNELS * (BITSPERSAMPLE / 8)
+#define FORMAT_TAG              1                                   // PCM
+#define SAMPLERATE              16000                               // 16000hz
+#define BITSPERSAMPLE           16                                  // 16-bit
+#define NCHANNELS               1                                   // 1 Channel mono audio
+#define BLOCK_ALIGN             NCHANNELS * (BITSPERSAMPLE / 8) 
 #define AVG_BYTE_PER_SECOND     BLOCK_ALIGN * SAMPLERATE
-#define BLOCK_SIZE              7000
+#define BLOCK_SIZE              5000                                //  5000 bytes per audio chunk
 
 struct WAV_HEADER {
     int     formatTag;

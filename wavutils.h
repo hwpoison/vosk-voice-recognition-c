@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+#include "record_audio.h"
+
 // Conversion from Big Endian to Little Endian
 uint32_t *to_little_endian(uint32_t x);
 

@@ -6,7 +6,7 @@
 #include "record_audio.h"
 
 #define true 1
-#define NUM_THREADS 2
+#define NUM_THREADS 1
 
 int main(int argc, char **argv)
 {
@@ -22,8 +22,9 @@ int main(int argc, char **argv)
     pthread_t thread_pool[NUM_THREADS];
 
     printf("[+] Initializing model...\n");
+    // Vosk recognizer uses Signed 16-bit PCM 
     VoskModel *model = vosk_model_new("model");
-    VoskRecognizer *recognizer = vosk_recognizer_new(model, SAMPLERATE);
+    VoskRecognizer *recognizer = vosk_recognizer_new(model, wav.sampleRate);
 
     char *option = argv[1];
     if (!strcmp(option, "--mic"))
@@ -34,9 +35,7 @@ int main(int argc, char **argv)
         {
             struct audio_block *block = dequeue_audio_block();
             if (block != NULL)
-            {
                 recognizeAudioBlock(recognizer, block->data, block->size);
-            }
         }
         printf("[+] Final result %s\n", getFinalResult(recognizer));
         pthread_exit(NULL);
@@ -57,6 +56,7 @@ int main(int argc, char **argv)
         else
         {
             printf("[x] File not found!\n");
+            return 1;
         }
     }
     else

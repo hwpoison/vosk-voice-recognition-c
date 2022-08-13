@@ -1,5 +1,4 @@
 #include "recognition.h"
-#include "record_audio.h"
 
 #define true 1
 
@@ -43,33 +42,6 @@ void *getBlockFromMic()
     }
 }
 
-void *getBlockFromFile(void *filename)
-{
-    printf("[+] Running recording thread for getBlockFromFile ...\n");
-    FILE *wavin;
-    char buffer[BLOCK_SIZE];
-    int nread;
-    wavin = fopen((char *)filename, "rb");
-    if (wavin == NULL)
-    {
-        printf("[x] Error opening file\n");
-    }
-    else
-    {
-        fseek(wavin, 44, SEEK_SET); // offset 44 bytes of wav header
-        while (!feof(wavin))
-        {
-            struct audio_block *block = malloc(sizeof(struct audio_block));
-            nread = fread(buffer, 1, sizeof(buffer), wavin);
-            block->size = nread;
-            block->data = malloc(nread);
-            memcpy(block->data, buffer, nread);
-            enqueue_audio_block(block);
-        }
-        fclose(wavin);
-    }
-}
-
 void recognizeAudioBlock(VoskRecognizer *recognizer, char *data, int nlen)
 {
     int final = vosk_recognizer_accept_waveform(recognizer, data, nlen);
@@ -89,11 +61,11 @@ void recognizeWavFile(VoskRecognizer *recognizer, char *filename)
     char buffer[BLOCK_SIZE];
     int nread;
     wavin = fopen(filename, "rb");
-    fseek(wavin, 44, SEEK_SET); // offset 44 bytes of wav header
+    fseek(wavin, 44, SEEK_SET); // offset 44 bytes to omits wav header
     while (!feof(wavin))
     {
-        nread = fread(buffer, 1, sizeof(buffer), wavin);
-        recognizeAudioBlock(recognizer, buffer, sizeof(buffer));
+        nread = fread(buffer, 1, BLOCK_SIZE, wavin);
+        recognizeAudioBlock(recognizer, buffer, BLOCK_SIZE);
     }
     fclose(wavin);
 }

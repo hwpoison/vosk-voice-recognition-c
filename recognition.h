@@ -6,6 +6,7 @@
 
 #include "vosk_api.h"
 #include "wavutils.h"
+#include "record_audio.h"
 
 struct audio_block
 {
@@ -28,9 +29,6 @@ struct audio_block *dequeue_audio_block();
 // Callback for read and add to queue a audio block from Microphone
 void *getBlockFromMic();
 
-// Callback for read and add to queue a audio block from Microphone
-void *getBlockFromFile(void *filename);
-
 // Analyze audio from a buffer
 void recognizeAudioBlock(VoskRecognizer *recognizer, char *data, int nlen);
 
@@ -41,6 +39,7 @@ unsigned char *getFinalResult(VoskRecognizer *recognizer);
 
 int checkFileExists(char *filename);
 
+// write some text in a file
 void writeToFile(char *filename, char *data, int nlen);
 
 #endif

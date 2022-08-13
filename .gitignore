@@ -4,3 +4,6 @@
 *.bat
 *.exe
 *.wav
+*.mp3
+*.transcription.txt
+/model/*

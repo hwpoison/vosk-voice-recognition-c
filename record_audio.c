@@ -1,7 +1,5 @@
 #include "record_audio.h"
 
-extern struct WAV_HEADER wav;
-
 //Length is typically 44100*time...
 int record(char * data, int length)
 {
@@ -9,7 +7,7 @@ int record(char * data, int length)
     WAVEHDR WaveInHdr;
  
     WAVEFORMATEX pFormat;
-    pFormat.wFormatTag = WAVE_FORMAT_PCM;     
+    pFormat.wFormatTag = wav.formatTag;     
     pFormat.nSamplesPerSec = wav.sampleRate;     
     pFormat.wBitsPerSample = wav.bitsPerSample;            
     pFormat.nChannels = wav.nChannels;
@@ -41,7 +39,7 @@ int play(char *data, int length)
     WAVEHDR WaveOutHdr;
  
     WAVEFORMATEX pFormat;
-    pFormat.wFormatTag = WAVE_FORMAT_PCM;     
+    pFormat.wFormatTag = wav.formatTag;     
     pFormat.nSamplesPerSec = wav.sampleRate;     
     pFormat.wBitsPerSample = wav.bitsPerSample;            
     pFormat.nChannels = wav.nChannels;

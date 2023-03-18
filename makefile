@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS= -llibvosk -lwinmm -L.
-TARGET=vosk_recogizer.exe
+TARGET=vosk_recognizer.exe
 
 all: voski 
 

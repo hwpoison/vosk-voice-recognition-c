@@ -3,6 +3,7 @@
 #include <windows.h>
 #include <mmsystem.h>
 
+#define DEVICE_ID 		0
 #define FORMAT_TAG              1                                   // PCM
 #define SAMPLERATE              16000                               // 16000hz
 #define BITSPERSAMPLE           16                                  // 16-bit

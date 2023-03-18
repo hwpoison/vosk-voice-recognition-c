@@ -5,7 +5,7 @@ int record(char * data, int length)
 {
     HWAVEIN hWaveIn;
     WAVEHDR WaveInHdr;
- 
+
     WAVEFORMATEX pFormat;
     pFormat.wFormatTag = wav.formatTag;     
     pFormat.nSamplesPerSec = wav.sampleRate;     
@@ -14,8 +14,8 @@ int record(char * data, int length)
     pFormat.nBlockAlign = wav.blockAlign; 
     pFormat.nAvgBytesPerSec = wav.avgBytesPerSecond; 
     pFormat.cbSize = 0;
-    
-    if(waveInOpen(&hWaveIn, WAVE_MAPPER,&pFormat,0L, 0L, WAVE_FORMAT_DIRECT)) return 1;
+ 
+    if(waveInOpen(&hWaveIn, WAVE_MAPPER ,&pFormat,0L, 0L, WAVE_FORMAT_DIRECT)) return 1;
      
     WaveInHdr.lpData = (LPSTR)data;
     WaveInHdr.dwBufferLength = length;

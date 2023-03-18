@@ -31,12 +31,11 @@ struct audio_block *dequeue_audio_block()
 
 void *getBlockFromMic()
 {
-    printf("[+] Running recording thread for getBlockFromMic ...\n");
+    struct audio_block *block = malloc(sizeof(struct audio_block));
+    block->size = BLOCK_SIZE;
+    block->data = malloc(sizeof(char) * block->size);
     while (true)
     {
-        struct audio_block *block = malloc(sizeof(struct audio_block));
-        block->size = BLOCK_SIZE;
-        block->data = malloc(sizeof(char) * block->size);
         record(block->data, block->size);
         enqueue_audio_block(block);
     }

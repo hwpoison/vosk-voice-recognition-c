@@ -39,10 +39,17 @@ typedef struct VoskSpkModel VoskSpkModel;
  *  speaker information and so on */
 typedef struct VoskRecognizer VoskRecognizer;
 
+
+/**
+ * Batch model object
+ */
+typedef struct VoskBatchModel VoskBatchModel;
+
 /**
  * Batch recognizer object
  */
 typedef struct VoskBatchRecognizer VoskBatchRecognizer;
+
 
 /** Loads model data from the file and returns the model object
  *
@@ -70,7 +77,7 @@ int vosk_model_find_word(VoskModel *model, const char *word);
 /** Loads speaker model data from the file and returns the model object
  *
  * @param model_path: the path of the model on the filesystem
- * @returns model object or NULL if problem occured */
+ * @returns model object or NULL if problem occurred */
 VoskSpkModel *vosk_spk_model_new(const char *model_path);
 
 
@@ -139,6 +146,15 @@ VoskRecognizer *vosk_recognizer_new_grm(VoskModel *model, float sample_rate, con
 void vosk_recognizer_set_spk_model(VoskRecognizer *recognizer, VoskSpkModel *spk_model);
 
 
+/** Reconfigures recognizer to use grammar
+ *
+ * @param recognizer   Already running VoskRecognizer
+ * @param grammar      Set of phrases in JSON array of strings or "[]" to use default model graph.
+ *                     See also vosk_recognizer_new_grm
+ */
+void vosk_recognizer_set_grm(VoskRecognizer *recognizer, char const *grammar);
+
+
 /** Configures recognizer to output n-best results
  *
  * <pre>
@@ -190,6 +206,11 @@ void vosk_recognizer_set_max_alternatives(VoskRecognizer *recognizer, int max_al
  */
 void vosk_recognizer_set_words(VoskRecognizer *recognizer, int words);
 
+/** Like above return words and confidences in partial results
+ *
+ * @param partial_words - boolean value
+ */
+void vosk_recognizer_set_partial_words(VoskRecognizer *recognizer, int partial_words);
 
 /** Set NLSML output
  * @param nlsml - boolean value
@@ -231,7 +252,7 @@ int vosk_recognizer_accept_waveform_f(VoskRecognizer *recognizer, const float *d
  *  }
  * </pre>
  *
- * If alternatives enabled it returns result with alternatives, see also vosk_recognizer_set_alternatives().
+ * If alternatives enabled it returns result with alternatives, see also vosk_recognizer_set_max_alternatives().
  *
  * If word times enabled returns word time, see also vosk_recognizer_set_word_times().
  */
@@ -277,7 +298,7 @@ void vosk_recognizer_free(VoskRecognizer *recognizer);
  *  @param log_level the level
  *     0 - default value to print info and error messages but no debug
  *     less than 0 - don't print info messages
- *     greather than 0 - more verbose mode
+ *     greater than 0 - more verbose mode
  */
 void vosk_set_log_level(int log_level);
 
@@ -297,30 +318,41 @@ void vosk_gpu_thread_init();
 
 /** Creates the batch recognizer object
  *
- *  @returns recognizer object or NULL if problem occured */
-VoskBatchRecognizer *vosk_batch_recognizer_new();
+ *  @returns model object or NULL if problem occured */
+VoskBatchModel *vosk_batch_model_new(const char *model_path);
 
-/** Releases batch recognizer object
- *  Underlying model is also unreferenced and if needed released */
+/** Releases batch model object */
+void vosk_batch_model_free(VoskBatchModel *model);
+
+/** Wait for the processing */
+void vosk_batch_model_wait(VoskBatchModel *model);
+
+/** Creates batch recognizer object
+ *  @returns recognizer object or NULL if problem occured */
+VoskBatchRecognizer *vosk_batch_recognizer_new(VoskBatchModel *model, float sample_rate);
+ 
+/** Releases batch recognizer object */
 void vosk_batch_recognizer_free(VoskBatchRecognizer *recognizer);
 
 /** Accept batch voice data */
-void vosk_batch_recognizer_accept_waveform(VoskBatchRecognizer *recognizer, int id, const char *data, int length);
+void vosk_batch_recognizer_accept_waveform(VoskBatchRecognizer *recognizer, const char *data, int length);
+
+/** Set NLSML output
+ * @param nlsml - boolean value
+ */
+void vosk_batch_recognizer_set_nlsml(VoskBatchRecognizer *recognizer, int nlsml);
 
 /** Closes the stream */
-void vosk_batch_recognizer_finish_stream(VoskBatchRecognizer *recognizer, int id);
+void vosk_batch_recognizer_finish_stream(VoskBatchRecognizer *recognizer);
 
 /** Return results */
-const char *vosk_batch_recognizer_front_result(VoskBatchRecognizer *recognizer, int id);
+const char *vosk_batch_recognizer_front_result(VoskBatchRecognizer *recognizer);
 
 /** Release and free first retrieved result */
-void vosk_batch_recognizer_pop(VoskBatchRecognizer *recognizer, int id);
-
-/** Wait for the processing */
-void vosk_batch_recognizer_wait(VoskBatchRecognizer *recognizer);
+void vosk_batch_recognizer_pop(VoskBatchRecognizer *recognizer);
 
 /** Get amount of pending chunks for more intelligent waiting */
-int vosk_batch_recognizer_get_pending_chunks(VoskBatchRecognizer *recognizer, int id);
+int vosk_batch_recognizer_get_pending_chunks(VoskBatchRecognizer *recognizer);
 
 #ifdef __cplusplus
 }

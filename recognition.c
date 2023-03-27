@@ -2,7 +2,7 @@
 
 #define true 1
 
-void enqueue_audio_block(struct audio_block *data)
+void enqueue_audio_block(audio_block *data)
 {
     if (queue_size == 0)
     {
@@ -17,13 +17,13 @@ void enqueue_audio_block(struct audio_block *data)
     queue_size++;
 }
 
-struct audio_block *dequeue_audio_block()
+audio_block *dequeue_audio_block()
 {
     if (queue_size == 0)
     {
         return NULL;
     }
-    struct audio_block *data = queue_head;
+    audio_block *data = queue_head;
     queue_head = queue_head->next;
     queue_size--;
     return data;
@@ -31,7 +31,7 @@ struct audio_block *dequeue_audio_block()
 
 void *getBlockFromMic()
 {
-    struct audio_block *block = malloc(sizeof(struct audio_block));
+    audio_block *block = malloc(sizeof(audio_block));
     block->size = BLOCK_SIZE;
     block->data = malloc(sizeof(char) * block->size);
     while (true)
@@ -41,17 +41,21 @@ void *getBlockFromMic()
     }
 }
 
-void recognizeAudioBlock(VoskRecognizer *recognizer, char *data, int nlen)
+recognition_result *recognizeAudioBlock(VoskRecognizer *recognizer, char *data, int nlen)
 {
     int final = vosk_recognizer_accept_waveform(recognizer, data, nlen);
+    recognition_result *result = malloc(sizeof(struct result_t));
     if (final)
     {
-        printf("%s\n", vosk_recognizer_result(recognizer));
+        result->content = (char*)vosk_recognizer_result(recognizer);
+	result->type = ENTIRE_RESULT;
     }
     else
     {
-        printf("%s\n", vosk_recognizer_partial_result(recognizer));
+	result->content = (char*)vosk_recognizer_partial_result(recognizer);
+	result->type = PARTIAL_RESULT;
     }
+    return result;
 }
 
 void recognizeWavFile(VoskRecognizer *recognizer, char *filename)
@@ -92,10 +96,10 @@ int checkFileExists(char *filename)
 void writeToFile(char *filename, char *data, int nlen)
 {
     FILE *file;
-    file = fopen(filename, "wb");
+    file = fopen(filename, "a");
     if (file == NULL)
     {
-        printf("[x] Error opening file\n");
+        fprintf(stderr, "[x] Error opening file\n");
     }
     else
     {

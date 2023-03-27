@@ -9,29 +9,37 @@
 #include "wavutils.h"
 #include "record_audio.h"
 
-struct audio_block
-{
+#define PARTIAL_RESULT 10
+#define ENTIRE_RESULT  11
+
+typedef struct audio_block_t {
     char *data;
     int size;
-    struct audio_block *next;
-};
+    struct audio_block_t *next;
+} audio_block;
+
+typedef struct result_t {
+	int type;
+	char *content;
+} recognition_result;
+
 
 // Global audio block enqueue
-static struct audio_block *queue_head;
-static struct audio_block *queue_tail;
+static audio_block *queue_head;
+static audio_block *queue_tail;
 static int queue_size = 0;
 
 // add audio block to queue
-void enqueue_audio_block(struct audio_block *data);
+void enqueue_audio_block(audio_block *data);
 
 // get audio block from queue
-struct audio_block *dequeue_audio_block();
+audio_block *dequeue_audio_block();
 
 // Callback for read and add to queue a audio block from Microphone
 void *getBlockFromMic();
 
 // Analyze audio from a buffer
-void recognizeAudioBlock(VoskRecognizer *recognizer, char *data, int nlen);
+struct result_t *recognizeAudioBlock(VoskRecognizer *recognizer, char *data, int nlen);
 
 // Voice to text from a .wav file
 void recognizeWavFile(VoskRecognizer *recognizer, char *filename);

@@ -10,7 +10,7 @@
 #define NCHANNELS               1                                   // 1 Channel mono audio
 #define BLOCK_ALIGN             NCHANNELS * (BITSPERSAMPLE / 8) 
 #define AVG_BYTE_PER_SECOND     BLOCK_ALIGN * SAMPLERATE
-#define BLOCK_SIZE              5000                                //  5000 bytes per audio chunk
+#define BLOCK_SIZE              4000                                //  amount of bytes per audio chunk
 
 struct WAV_HEADER {
     int     formatTag;

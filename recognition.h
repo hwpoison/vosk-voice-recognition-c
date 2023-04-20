@@ -19,8 +19,8 @@ typedef struct audio_block_t {
 } audio_block;
 
 typedef struct result_t {
-	int type;
-	char *content;
+	int type;    	// PARTIAL_RESULT | ENTIRE_RESULT
+	char *content; 
 } recognition_result;
 
 
@@ -29,22 +29,33 @@ static audio_block *queue_head;
 static audio_block *queue_tail;
 static int queue_size = 0;
 
+// Global model and recognizer
+VoskModel *gvosk_model;
+VoskRecognizer *gvosk_recognizer;
+
+
+// Initialize the gvosk_model and gvosk_recognizer
+void initializeModelAndRecognizer();
+
 // add audio block to queue
 void enqueue_audio_block(audio_block *data);
 
 // get audio block from queue
 audio_block *dequeue_audio_block();
 
+// Recognize audio block from audio_queue
+void recognizeFromAudioBlockQueue(char *output_filename);
+
 // Callback for read and add to queue a audio block from Microphone
 void *getBlockFromMic();
 
 // Analyze audio from a buffer
-struct result_t *recognizeAudioBlock(VoskRecognizer *recognizer, char *data, int nlen);
+struct result_t *recognizeAudioBlock(char *data, int nlen);
 
 // Voice to text from a .wav file
-void recognizeWavFile(VoskRecognizer *recognizer, char *filename);
+void recognizeWavFile(char *audio_filename, char *output_filename);
 
-unsigned char *getFinalResult(VoskRecognizer *recognizer);
+unsigned char *getFinalResult();
 
 int checkFileExists(char *filename);
 

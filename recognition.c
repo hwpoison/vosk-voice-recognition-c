@@ -29,6 +29,16 @@ audio_block *dequeue_audio_block()
     return data;
 }
 
+
+void initializeModelAndRecognizer(){
+	gvosk_model = vosk_model_new("model");
+	if(gvosk_model == NULL){
+	    fprintf(stderr, "[x] ERROR TO LOAD MODEL, CHECK IF EXISTS IN THE FOLDER\n");
+	    exit(-1);
+    	}
+	gvosk_recognizer = vosk_recognizer_new(gvosk_model, wav.sampleRate);
+}
+
 void *getBlockFromMic()
 {
     audio_block *block = malloc(sizeof(audio_block));
@@ -41,41 +51,76 @@ void *getBlockFromMic()
     }
 }
 
-recognition_result *recognizeAudioBlock(VoskRecognizer *recognizer, char *data, int nlen)
+recognition_result *recognizeAudioBlock(char *data, int nlen)
 {
-    int final = vosk_recognizer_accept_waveform(recognizer, data, nlen);
+    int final = vosk_recognizer_accept_waveform(gvosk_recognizer, data, nlen);
     recognition_result *result = malloc(sizeof(struct result_t));
     if (final)
     {
-        result->content = (char*)vosk_recognizer_result(recognizer);
+        result->content = (char*)vosk_recognizer_result(gvosk_recognizer);
 	result->type = ENTIRE_RESULT;
     }
     else
     {
-	result->content = (char*)vosk_recognizer_partial_result(recognizer);
+	result->content = (char*)vosk_recognizer_partial_result(gvosk_recognizer);
 	result->type = PARTIAL_RESULT;
     }
     return result;
 }
 
-void recognizeWavFile(VoskRecognizer *recognizer, char *filename)
+void recognizeFromAudioBlockQueue(char *output_filename) {
+        audio_block *audio_queue_head;
+	recognition_result *result = malloc(sizeof(struct result_t*));
+	while (true)
+	{
+	    audio_queue_head = dequeue_audio_block();
+	    if(audio_queue_head != NULL){
+		result = recognizeAudioBlock(audio_queue_head->data, audio_queue_head->size);
+		printf("%s\n", result->content);
+		
+		// when recognition is finished and it has content, reset recognizer
+		if(result->type == ENTIRE_RESULT && !strstr(result->content, "\"\"")){
+			printf("%s\n", result->content);
+			writeToFile(output_filename, result->content, strlen(result->content));
+			vosk_recognizer_free(gvosk_recognizer);
+			gvosk_recognizer = vosk_recognizer_new(gvosk_model, wav.sampleRate);
+		}
+	    }
+	}
+}
+
+void recognizeWavFile(char *input_audio_fp, char *output_filename)
 {
     FILE *wavin;
     char buffer[BLOCK_SIZE];
     int nread;
-    wavin = fopen(filename, "rb");
+    wavin = fopen(input_audio_fp, "rb");
     fseek(wavin, 44, SEEK_SET); // offset 44 bytes to omits wav header
+				//
+    recognition_result *result = malloc(sizeof(struct result_t));
+
     while (!feof(wavin))
     {
         nread = fread(buffer, 1, BLOCK_SIZE, wavin);
-        recognizeAudioBlock(recognizer, buffer, BLOCK_SIZE);
+        result = recognizeAudioBlock(buffer, BLOCK_SIZE);
+	if(result->type == ENTIRE_RESULT){
+		printf("%s\n", result->content);
+		writeToFile(output_filename, result->content, strlen(result->content));
+		vosk_recognizer_free(gvosk_recognizer);
+		gvosk_recognizer = vosk_recognizer_new(gvosk_model, wav.sampleRate);
+	}
     }
+    unsigned char* finalResult = getFinalResult(gvosk_recognizer);
+    printf("%s\n", finalResult);
+    writeToFile(output_filename, finalResult, strlen(finalResult));
+    
+    printf("[+] EOF wav.\n");
     fclose(wavin);
 }
 
-unsigned char *getFinalResult(VoskRecognizer *recognizer)
+unsigned char *getFinalResult()
 {
-    return (unsigned char *)vosk_recognizer_result(recognizer);
+    return (unsigned char *)vosk_recognizer_result(gvosk_recognizer);
 }
 
 int checkFileExists(char *filename)

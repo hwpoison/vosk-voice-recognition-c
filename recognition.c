@@ -1,4 +1,5 @@
 #include "recognition.h"
+#include <windows.h>
 
 #define true 1
 
@@ -31,11 +32,12 @@ audio_block *dequeue_audio_block()
 
 
 void initializeModelAndRecognizer(){
+    printf("[+] Initializing model and the recognizer.\n");
 	gvosk_model = vosk_model_new("model");
 	if(gvosk_model == NULL){
 	    fprintf(stderr, "[x] ERROR TO LOAD MODEL, CHECK IF EXISTS IN THE FOLDER\n");
 	    exit(-1);
-    	}
+    }
 	gvosk_recognizer = vosk_recognizer_new(gvosk_model, wav.sampleRate);
 }
 
@@ -58,33 +60,35 @@ recognition_result *recognizeAudioBlock(char *data, int nlen)
     if (final)
     {
         result->content = (char*)vosk_recognizer_result(gvosk_recognizer);
-	result->type = ENTIRE_RESULT;
+	    result->type = ENTIRE_RESULT;
     }
     else
     {
-	result->content = (char*)vosk_recognizer_partial_result(gvosk_recognizer);
-	result->type = PARTIAL_RESULT;
+	   result->content = (char*)vosk_recognizer_partial_result(gvosk_recognizer);
+	   result->type = PARTIAL_RESULT;
     }
     return result;
 }
 
 void recognizeFromAudioBlockQueue(char *output_filename) {
-        audio_block *audio_queue_head;
+    audio_block *audio_queue_head;
 	recognition_result *result = malloc(sizeof(struct result_t*));
 	while (true)
 	{
 	    audio_queue_head = dequeue_audio_block();
 	    if(audio_queue_head != NULL){
-		result = recognizeAudioBlock(audio_queue_head->data, audio_queue_head->size);
-		printf("%s\n", result->content);
-		
-		// when recognition is finished and it has content, reset recognizer
-		if(result->type == ENTIRE_RESULT && !strstr(result->content, "\"\"")){
-			printf("%s\n", result->content);
-			writeToFile(output_filename, result->content, strlen(result->content));
-			vosk_recognizer_free(gvosk_recognizer);
-			gvosk_recognizer = vosk_recognizer_new(gvosk_model, wav.sampleRate);
-		}
+    		result = recognizeAudioBlock(audio_queue_head->data, audio_queue_head->size);
+    		printf("%s\n", result->content);
+    		
+    		// when recognition is finished and it has content, reset recognizer
+    		if(result->type == ENTIRE_RESULT && !strstr(result->content, "\"\"")){
+    			printf("result: %s\n", result->content);
+    			writeToFile(output_filename, result->content, strlen(result->content));
+
+                // release recognizer to avoid a memory leak
+                vosk_recognizer_free(gvosk_recognizer);
+                gvosk_recognizer = vosk_recognizer_new(gvosk_model, wav.sampleRate);
+    		}
 	    }
 	}
 }
@@ -151,4 +155,11 @@ void writeToFile(char *filename, char *data, int nlen)
         fwrite(data, sizeof(char), nlen, file);
         fclose(file);
     }
+}
+
+
+void recognizer_exit()
+{
+    vosk_recognizer_free(gvosk_recognizer);
+    vosk_model_free(gvosk_model);
 }

@@ -30,8 +30,8 @@ static audio_block *queue_tail;
 static int queue_size = 0;
 
 // Global model and recognizer
-VoskModel *gvosk_model;
-VoskRecognizer *gvosk_recognizer;
+extern VoskModel *gvosk_model;
+extern VoskRecognizer *gvosk_recognizer;
 
 
 // Initialize the gvosk_model and gvosk_recognizer
@@ -61,5 +61,8 @@ int checkFileExists(char *filename);
 
 // write some text in a file
 void writeToFile(char *filename, char *data, int nlen);
+
+// free the recognizer
+void recognizer_exit();
 
 #endif

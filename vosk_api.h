@@ -77,7 +77,7 @@ int vosk_model_find_word(VoskModel *model, const char *word);
 /** Loads speaker model data from the file and returns the model object
  *
  * @param model_path: the path of the model on the filesystem
- * @returns model object or NULL if problem occurred */
+ * @returns model object or NULL if problem occured */
 VoskSpkModel *vosk_spk_model_new(const char *model_path);
 
 
@@ -144,15 +144,6 @@ VoskRecognizer *vosk_recognizer_new_grm(VoskModel *model, float sample_rate, con
  *
  * @param spk_model Speaker recognition model */
 void vosk_recognizer_set_spk_model(VoskRecognizer *recognizer, VoskSpkModel *spk_model);
-
-
-/** Reconfigures recognizer to use grammar
- *
- * @param recognizer   Already running VoskRecognizer
- * @param grammar      Set of phrases in JSON array of strings or "[]" to use default model graph.
- *                     See also vosk_recognizer_new_grm
- */
-void vosk_recognizer_set_grm(VoskRecognizer *recognizer, char const *grammar);
 
 
 /** Configures recognizer to output n-best results
@@ -252,7 +243,7 @@ int vosk_recognizer_accept_waveform_f(VoskRecognizer *recognizer, const float *d
  *  }
  * </pre>
  *
- * If alternatives enabled it returns result with alternatives, see also vosk_recognizer_set_max_alternatives().
+ * If alternatives enabled it returns result with alternatives, see also vosk_recognizer_set_alternatives().
  *
  * If word times enabled returns word time, see also vosk_recognizer_set_word_times().
  */
@@ -298,7 +289,7 @@ void vosk_recognizer_free(VoskRecognizer *recognizer);
  *  @param log_level the level
  *     0 - default value to print info and error messages but no debug
  *     less than 0 - don't print info messages
- *     greater than 0 - more verbose mode
+ *     greather than 0 - more verbose mode
  */
 void vosk_set_log_level(int log_level);
 
@@ -319,7 +310,7 @@ void vosk_gpu_thread_init();
 /** Creates the batch recognizer object
  *
  *  @returns model object or NULL if problem occured */
-VoskBatchModel *vosk_batch_model_new(const char *model_path);
+VoskBatchModel *vosk_batch_model_new();
 
 /** Releases batch model object */
 void vosk_batch_model_free(VoskBatchModel *model);

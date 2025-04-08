@@ -75,6 +75,7 @@ void recognizeFromAudioBlockQueue(char *output_filename) {
 	recognition_result *result = malloc(sizeof(struct result_t*));
 	while (true)
 	{
+        Sleep(1);
 	    audio_queue_head = dequeue_audio_block();
 	    if(audio_queue_head != NULL){
     		result = recognizeAudioBlock(audio_queue_head->data, audio_queue_head->size);
